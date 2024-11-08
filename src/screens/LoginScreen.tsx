@@ -71,21 +71,17 @@ async function login() {
             <View style={styles.spacing} />
             <TextField
               placeholder="Username"
-              height={40}
               value={usernameFormTextfield}
               onChangeText={setUsernameFormTextfeild}
             />
             <PasswordTextField
               placeholder="Password"
-              height={40}
               value={passwordFormTextfield}
               onChangeText={setpasswordFormTextfield}
             />
             <View style={styles.spacing} />
             <GradientButton
               title="Sign in"
-              height={32}
-              width={340}
               status="normal"
               onPress={login}
             />

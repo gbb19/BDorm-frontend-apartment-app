@@ -87,8 +87,8 @@ export function BillScreen() {
     }
   }
 
-  function handleToDetails(billID:number){
-    navigation.navigate("BillDetails", { billID });
+  function handleToDetails(bill: Bill){
+    navigation.navigate("BillDetails", { bill });
   }
 
   return (
@@ -110,6 +110,7 @@ export function BillScreen() {
           <Text>Error: {error}</Text>
         </View>
       )}
+
       {filteredBillsByDate && (
         <FlatList
           style={styles.content}
@@ -123,7 +124,7 @@ export function BillScreen() {
                   key={bill.billID}
                   bill_id={bill.billID}
                   status={bill.billStatus}
-                  onPress={() => handleToDetails(bill.billID)}
+                  onPress={() => handleToDetails(bill)}
                 />
               ))}
             </>

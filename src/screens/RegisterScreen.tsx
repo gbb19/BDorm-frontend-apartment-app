@@ -119,8 +119,6 @@ export function RegisterScreen() {
             <View style={{ height: 20, backgroundColor: colors.primary }} />
             <GradientButton
               title="Register"
-              height={32}
-              width={340}
               status="normal"
               onPress={registerHandle}
             />
