@@ -1,11 +1,10 @@
 import axios from "axios";
-import dotenv from "dotenv";
 
-dotenv.config();
+const GITHUB_TOKEN = process.env.EXPO_PUBLIC_GITHUB_TOKEN;
+const OWNER = process.env.EXPO_PUBLIC_OWNER;
+const REPO = process.env.EXPO_PUBLIC_REPO;
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const OWNER = process.env.OWNER;
-const REPO = process.env.REPO;
+console.log(GITHUB_TOKEN)
 
 export const uploadImageToGitHub = async (
   transactionId: string,
