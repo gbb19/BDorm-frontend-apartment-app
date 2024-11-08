@@ -16,6 +16,7 @@ import { ParamListBase, useNavigation } from "@react-navigation/native";
 
 import { UserService } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function LoginScreen() {
   const [usernameFormTextfield, setUsernameFormTextfeild] = useState("");
@@ -24,21 +25,33 @@ export function LoginScreen() {
 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
-  async function login() {
-    try {
-      // เรียกใช้ UserService.login() เพื่อเข้าสู่ระบบ
-      const user = await UserService.login({
-        username: usernameFormTextfield,
-        password: passwordFormTextfield,
-      });
+async function login() {
+  try {
+    // เรียกใช้ UserService.login() เพื่อเข้าสู่ระบบและรับข้อมูลผู้ใช้
+    const user = await UserService.login({ username:usernameFormTextfield, password:passwordFormTextfield });
 
-      setUser(user); // ตั้งค่าผู้ใช้ใน AuthContext
-      setIsLoggedIn(true); // ตั้งค่าสถานะการล็อกอิน
-      navigation.navigate("Home");
-    } catch (error) {
-      alert("Invalid login");
+    // บันทึกข้อมูลผู้ใช้ลงใน AsyncStorage
+    await AsyncStorage.setItem("userToken", user.token);
+    await AsyncStorage.setItem("username", user.username);
+    await AsyncStorage.setItem("firstName", user.firstName);
+    await AsyncStorage.setItem("lastName", user.lastName);
+
+    // บันทึก roles เป็น JSON string เพื่อใช้ในภายหลัง
+    if (user.roles) {
+      await AsyncStorage.setItem("userRole", JSON.stringify(user.roles));
     }
+
+    // ตั้งค่าผู้ใช้ใน AuthContext
+    setUser(user);
+    setIsLoggedIn(true);
+
+    // นำทางไปหน้า "Home" หลังจากเข้าสู่ระบบสำเร็จ
+    navigation.navigate("Home");
+  } catch (error) {
+    alert("Invalid login");
   }
+}
+
 
 
 

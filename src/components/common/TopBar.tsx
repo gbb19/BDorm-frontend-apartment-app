@@ -36,6 +36,7 @@ export function TopBar() {
 const styles = StyleSheet.create({
   topBarContainer: {
     backgroundColor: colors.secondary,
+    height:64,
     paddingVertical: 16,
     paddingHorizontal: 24,
     flexDirection: "row",

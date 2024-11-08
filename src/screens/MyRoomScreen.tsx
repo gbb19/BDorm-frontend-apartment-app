@@ -9,19 +9,26 @@ import { GradientLine } from "../components/common/GradientLine";
 import { GradientButton } from "../components/common/GradientButton";
 import { ContractService } from "../services/contractService";
 import RoomCard from "../components/common/RoomCard";
+import { IContractResponse } from "../types/contract.types";
+import { ContractResponse } from "../models/ContractResponse";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 export function MyRoomScreen() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [contracts, setContracts] = useState<number[]>([]);
+  const [contracts, setContracts] = useState<ContractResponse[]>([]);
+  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   useEffect(() => {
-    if (contracts) {
-      fetchRooms("tenant1");
+    if (!contracts) {
+      fetchRooms(user?.username!);
     }
   }, [contracts]);
 
-  function handelShowRoom() {}
+  function handelShowContractDetail(contractResponse:ContractResponse) {
+    navigation.navigate("ContractDetail", { contractResponse });
+  }
 
   async function fetchRooms(username: string) {
     setLoading(true);
@@ -56,15 +63,15 @@ export function MyRoomScreen() {
         <View style={styles.cardList}>
           {!loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#0000ff" />
+              <ActivityIndicator size="large" />
             </View>
           ) : (
-            contracts.map((contract, index) => (
+            contracts.map((contractResponse, index) => (
               <RoomCard
-                key={index}
-                room={contract}
+                key={contractResponse.contractRoomNumber}
+                room={contractResponse.contractRoomNumber}
                 onClick={() => {
-                  console.log("hello");
+                  handelShowContractDetail(contractResponse)
                 }}
               /> // สร้าง RoomCard สำหรับแต่ละ contract
             ))

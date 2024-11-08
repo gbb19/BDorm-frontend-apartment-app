@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import StackNavigator from "./StackNavigator";
+import { RoomStackNavigator } from "./RoomStackNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../styles/colors";
-import { ProfileScreen } from "../../screens/ProfileScreen";
 import { useAuth } from "../../context/AuthContext";
+import { BillScreen } from "../../screens/BillScreen";
+import { BillStackNavigator } from "./BillStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
-export function TabNavigator() {
+export function TenantTabNavigator() {
   const { user } = useAuth();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export function TabNavigator() {
 
   return (
     <Tab.Navigator
-      initialRouteName="MyRoomTab"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false, // ปิด header ของ Tab Navigator
         tabBarActiveTintColor: colors.gradient_primary, // สีของไอคอนเมื่อแท็บถูกเลือก
@@ -28,21 +29,20 @@ export function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="MyRoomTab"
-        component={StackNavigator}
+        name="Home"
+        component={RoomStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" color={color} size={size} /> // ไอคอนสำหรับแท็บนี้
           ),
         }}
       />
-
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Billing"
+        component={BillStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" color={color} size={size} /> // ไอคอนสำหรับแท็บนี้
+            <Ionicons name="receipt" size={size} color={color} />
           ),
         }}
       />

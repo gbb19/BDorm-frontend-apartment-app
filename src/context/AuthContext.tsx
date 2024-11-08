@@ -37,37 +37,46 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true); // สถานะการโหลด
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const userToken = await AsyncStorage.getItem("userToken");
-        if (userToken) {
-          const userRole = await AsyncStorage.getItem("userRole");
-          const userName = await AsyncStorage.getItem("username");
-          const firstName = await AsyncStorage.getItem("firstName");
-          const lastName = await AsyncStorage.getItem("lastName");
+useEffect(() => {
+  const checkLoginStatus = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("userToken");
+      if (userToken) {
+        const userRole = await AsyncStorage.getItem("userRole");
+        const userName = await AsyncStorage.getItem("username");
+        const firstName = await AsyncStorage.getItem("firstName");
+        const lastName = await AsyncStorage.getItem("lastName");
+        console.log(userRole)
 
-          // สร้าง user object จากข้อมูลที่เก็บ
-          const userData: IUserResponse = {
-            username: userName!,
-            first_name: firstName!,
-            last_name: lastName!,
-            roles: userRole ? [userRole] : [],
-            token: userToken,
-          };
-
-          setUser(new User(userData)); // ตั้งค่าผู้ใช้
-          setIsLoggedIn(true);
+        // แปลง userRole จาก string เป็น array
+        let rolesArray;
+        try {
+          rolesArray = userRole ? JSON.parse(userRole) : []; // ตรวจสอบว่า roles ถูกเก็บเป็น array หรือไม่
+        } catch {
+          rolesArray = [userRole]; // ถ้า JSON.parse ล้มเหลว ให้เก็บค่า roles เป็น array เดี่ยว
         }
-      } catch (error) {
-        console.error("Error checking login status:", error);
-      } finally {
-        setIsLoading(false); // เมื่อโหลดเสร็จแล้วให้ตั้งค่าเป็น false
-      }
-    };
 
-    checkLoginStatus();
-  }, []);
+        // สร้าง user object จากข้อมูลที่เก็บ
+        const userData: IUserResponse = {
+          username: userName!,
+          first_name: firstName!,
+          last_name: lastName!,
+          roles: rolesArray,
+          token: userToken,
+        };
+
+        setUser(new User(userData)); // ตั้งค่าผู้ใช้
+        setIsLoggedIn(true);
+      }
+    } catch (error) {
+      console.error("Error checking login status:", error);
+    } finally {
+      setIsLoading(false); // เมื่อโหลดเสร็จแล้วให้ตั้งค่าเป็น false
+    }
+  };
+
+  checkLoginStatus();
+}, []);
 
   async function logout() {
     // เคลียร์ข้อมูลจาก AsyncStorage

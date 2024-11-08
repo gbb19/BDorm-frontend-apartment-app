@@ -1,11 +1,15 @@
-export interface IContract {
-  contractNumber: string;
-  contractYear: number;
-  roomNumber: string;
-  rentalPrice: number;
-  waterRate: number;
-  electricityRate: number;
-  internetFee: number;
-  status: string;
-  tenantUsername: string;
+export interface IContractCreate {
+  contract_number: number;
+  contract_year: number;
+  contract_room_number: number;
+  rental_price: number;
+  water_rate: number;
+  electricity_rate: number;
+  internet_service_fee: number;
+}
+
+export interface IContractResponse {
+  contract_number: number;
+  contract_year: number;
+  contract_room_number: number;
 }

@@ -1,25 +1,39 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
-import { TabNavigator } from './TabNavigator';
-import { AuthNavigator } from './AuthNavigator';
+import React from "react";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { TenantTabNavigator } from "./TenantTabNavigator";
+import { AuthNavigator } from "./AuthNavigator";
+import { EmployeeTabNavigator } from "./EmployeeTabNavigator";
+import { useAuth } from "../../context/AuthContext";
 
 export function AppNavigator() {
-  const { isLoggedIn, isLoading } = useAuth();
+  const { user, isLoggedIn, isLoading } = useAuth();
 
   if (isLoading) {
-    // แสดงหน้าจอโหลดระหว่างที่กำลังตรวจสอบสถานะการเข้าสู่ระบบ
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
 
+  const isEmployee = user?.roles?.some((role) =>
+    ["accountant", "manager", "cashier"].includes(role)
+  );
+
   return (
     <NavigationContainer>
-      {isLoggedIn ? <TabNavigator /> : <AuthNavigator />}
+      {isLoggedIn ? (
+        user?.roles?.includes("tenant") ? (
+          <TenantTabNavigator />
+        ) : isEmployee ? (
+          <EmployeeTabNavigator />
+        ) : (
+          <TenantTabNavigator /> 
+        )
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
   );
 }
@@ -27,7 +41,7 @@ export function AppNavigator() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

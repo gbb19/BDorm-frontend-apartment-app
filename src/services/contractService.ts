@@ -1,28 +1,17 @@
 import axios from "../apis/axios";
 import { ENDPOINTS } from "../apis/endpoints";
-import { useAuth } from "../context/AuthContext";
-import { Contract } from "../models/Contract";
+import { ContractDetail } from "../models/ContractDetail";
+import { ContractResponse } from "../models/ContractResponse";
+import { IContractCreate, IContractResponse } from "../types/contract.types";
 
 export class ContractService {
-  // static async getAllContractByUsername(username: string): Promise<Contract[]> {
-  //   try {
-  //     const response = await axios.get<Contract[]>(
-  //       ENDPOINTS.CONTRACT.GET_CONTRACTS(username),
-  //       {
-  //         withCredentials: true,
-  //       }
-  //     );
-
-  //     return response.data.map((contract) => Contract.fromResponse(contract)); // การแปลงข้อมูลเป็นแบบที่ต้องการ
-  //   } catch (error) {
-  //     // จัดการข้อผิดพลาด
-  //     throw new Error("Failed to fetch contracts");
-  //   }
-  static async getAllContractByUsername(username: string,token: string): Promise<number[]> {
+  static async getAllContractByUsername(
+    username: string,
+    token: string
+  ): Promise<ContractResponse[]> {
     try {
-      const response = await axios.get<{ contracts: number[] }>(
+      const response = await axios.get<{ contracts: IContractResponse[] }>(
         ENDPOINTS.CONTRACT.GET_CONTRACTS(username),
-
         {
           headers: {
             Authorization: `Bearer ${token}`, // ส่ง token ใน header
@@ -31,16 +20,47 @@ export class ContractService {
         }
       );
 
-      // ถ้าไม่มีสัญญาที่ตรงกับ username ให้คืนค่าอาร์เรย์ว่าง
+      // ถ้าไม่มีข้อมูล contracts ให้คืนค่าเป็นอาร์เรย์ว่าง
       if (!response.data.contracts) {
         return [];
       }
 
-      // ส่งกลับหมายเลขห้องสัญญา (contract room numbers) แบบ number[]
-      return response.data.contracts;
+      // แปลง IContractResponse[] เป็น ContractResponse[] ก่อนส่งกลับ
+      return response.data.contracts.map((contract) =>
+        ContractResponse.fromResponse(contract)
+      );
     } catch (error) {
       // จัดการข้อผิดพลาด
       throw new Error("Failed to fetch contracts");
+    }
+  }
+
+  static async getContractDetails(
+    contractNumber: number,
+    contractYear: number,
+    token: string
+  ): Promise<ContractDetail> {
+    try {
+      const response = await axios.get<{ contract: IContractCreate }>(
+        ENDPOINTS.CONTRACT.GET_CONTRACTS_DETAILS(contractNumber, contractYear),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      // ตรวจสอบว่ามีข้อมูล contract อยู่ใน response
+      if (!response.data || !response.data.contract) {
+        throw new Error("No contract details found");
+      }
+
+      // แปลงข้อมูลจาก IContractCreate เป็น ContractDetail ก่อนส่งกลับ
+      console.log(response.data.contract); // ดูข้อมูลใน console
+      return ContractDetail.fromResponse(response.data.contract);
+    } catch (error) {
+      throw new Error("Failed to fetch contract details");
     }
   }
 }
