@@ -3,6 +3,7 @@ import {
   IReservationCreate,
   IReservationResponse,
   IReservationUpdate,
+  IUpdateReservationDetails,
 } from "../types/reservation.types";
 import { ENDPOINTS } from "../apis/endpoints";
 import axios from "../apis/axios";
@@ -91,14 +92,14 @@ export class ReservationService {
 
   // การอัปเดตสถานะของ Reservation
   static async updateReservationStatus(
-    reservationID: number,
-    updateData: IReservationUpdate,
+    updateData: IReservationUpdate, // ไม่ต้องรับ reservationID ใน URL
     token: string
   ): Promise<void> {
     try {
+      // ส่งข้อมูลผ่าน body แทนการใช้ reservationID ใน URL
       await axios.put(
-        `${ENDPOINTS.RESERVATION.PUT_UPDATE_STATUS}/${reservationID}`,
-        updateData,
+        `${ENDPOINTS.RESERVATION.PUT_UPDATE_STATUS}`, // URL ไม่ต้องมี reservationID
+        updateData, // ส่งข้อมูล updateData ใน request body
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -137,6 +138,28 @@ export class ReservationService {
       return Reservation.fromResponse(response.data.reservation);
     } catch (error) {
       throw new Error("Failed to fetch reservation details");
+    }
+  }
+
+  static async updateReservationDetails(
+    reservationDetails: IUpdateReservationDetails,
+    token: string
+  ): Promise<void> {
+    try {
+      await axios.put(
+        ENDPOINTS.RESERVATION.PUT_UPDATE_DETAILS,
+        reservationDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ส่ง token ใน header เพื่อการตรวจสอบสิทธิ์
+          },
+          withCredentials: true,
+        }
+      );
+      console.log("Reservation details updated successfully");
+    } catch (error) {
+      console.error("Failed to update reservation details:", error);
+      throw new Error("Failed to update reservation details");
     }
   }
 }

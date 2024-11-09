@@ -17,6 +17,7 @@ export function BillManagerStackNavigator() {
       <Stack.Screen
         name="BillManager"
         component={BillManagerScreen}
+        initialParams={{ topbar: true }} // ส่ง props ไปที่ BillScreen
         options={{ headerShown: false }} // ซ่อน header สำหรับ MyRoomScreen
       />
       <Stack.Screen

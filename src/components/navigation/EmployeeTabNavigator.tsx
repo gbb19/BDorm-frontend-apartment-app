@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../styles/colors";
 import { useAuth } from "../../context/AuthContext";
-import { BillManagerScreen } from "../../screens/BillManagerScreen";
 import { BillManagerStackNavigator } from "./BillManagerStackNavigator";
 import { RoomManagerStackNavigator } from "./RoomManagerStackNavigator copy";
+import { ReservationManagerStackNavigator } from "./ReservationManagerStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +33,15 @@ export function EmployeeTabNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Reservations"
+        component={ReservationManagerStackNavigator}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" color={color} size={size} /> // ไอคอนสำหรับแท็บนี้
           ),
         }}
       />

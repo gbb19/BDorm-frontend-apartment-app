@@ -22,8 +22,13 @@ interface BillsByDate {
   bills: Bill[];
 }
 
-export function BillManagerScreen() {
+interface BillManagerScreenProps {
+  route: any; // รับ route props
+}
+
+export function BillManagerScreen({ route }: BillManagerScreenProps) {
   const { user } = useAuth();
+  const { topbar } = route.params; // ดึง topbar จาก params
   const [allBillsByDate, setAllBillsByDate] = useState<BillsByDate[] | null>(
     null
   );
@@ -93,7 +98,7 @@ export function BillManagerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TopBar />
+      {topbar && <TopBar />}
       <SearchBar
         placeholder="Search bills..."
         onSearch={handleSearch}

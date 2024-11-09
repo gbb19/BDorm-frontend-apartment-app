@@ -3,8 +3,8 @@ import { ENDPOINTS } from "../apis/endpoints";
 import { Bill } from "../models/Bill";
 import { BillItem } from "../models/BillItem";
 import { Transaction } from "../models/Transaction";
-import { IBillResponse } from "../types/bill.types";
-import { IBillItemResponse } from "../types/billItem.types";
+import { IBillCreateResponse, IBillResponse } from "../types/bill.types";
+import { IBillItemCreateResponse, IBillItemResponse } from "../types/billItem.types";
 import {
   ITransactionCreate,
   ITransactionResponse,
@@ -119,6 +119,7 @@ export class BillService {
       throw new Error("Failed to create transaction");
     }
   }
+
   static async getAllBills(token: string): Promise<Bill[]> {
     try {
       const response = await axios.get<{ bills: IBillResponse[] }>(
@@ -148,7 +149,7 @@ export class BillService {
   ): Promise<void> {
     try {
       await axios.put(
-        ENDPOINTS.BILL.UPDATE_TRANSACTION_STATUS(transactionId, status),
+        ENDPOINTS.BILL.PUT_UPDATE_TRANSACTION_STATUS(transactionId, status),
         {},
         {
           headers: {
@@ -170,7 +171,7 @@ export class BillService {
   ): Promise<void> {
     try {
       await axios.put(
-        ENDPOINTS.BILL.UPDATE_BILL_STATUS(billId, status), // กำหนด endpoint สำหรับการอัปเดตสถานะ
+        ENDPOINTS.BILL.PUT_UPDATE_BILL_STATUS(billId, status), // กำหนด endpoint สำหรับการอัปเดตสถานะ
         {},
         {
           headers: {
@@ -182,6 +183,63 @@ export class BillService {
     } catch (error) {
       console.error("Failed to update bill status:", error);
       throw new Error("Failed to update bill status");
+    }
+  }
+
+  static async createBill(
+    paymentTerm: number,
+    tenantUsername: string,
+    cashierUsername: string,
+    token: string
+  ): Promise<IBillCreateResponse> {
+    try {
+      const response = await axios.post<IBillCreateResponse>(
+        ENDPOINTS.BILL.POST_CREATE_BILL,
+        {
+          payment_term: paymentTerm,
+          tenant_username: tenantUsername,
+          cashier_username: cashierUsername,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ส่ง token ใน header
+          },
+        }
+      );
+      return response.data; // คืนค่า bill_id ที่ได้รับจากการสร้าง Bill
+    } catch (error) {
+      console.error("Error creating bill:", error);
+      throw new Error("Failed to create bill");
+    }
+  }
+  static async createBillItem(
+    billId: number,
+    billItemNumber: number,
+    billItemName: string,
+    unit: number,
+    unitPrice: number,
+    token: string
+  ): Promise<IBillItemCreateResponse> {
+    try {
+      const response = await axios.post<IBillItemCreateResponse>(
+        ENDPOINTS.BILL.POST_CREATE_BILL_ITEM,
+        {
+          bill_id: billId,
+          bill_item_number: billItemNumber,
+          bill_item_name: billItemName,
+          unit: unit,
+          unit_price: unitPrice,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ส่ง token ใน header
+          },
+        }
+      );
+      return response.data; // คืนค่าข้อความตอบกลับจากการสร้าง BillItem
+    } catch (error) {
+      console.error("Error creating bill item:", error);
+      throw new Error("Failed to create bill item");
     }
   }
 }

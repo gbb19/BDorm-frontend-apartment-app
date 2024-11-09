@@ -276,7 +276,7 @@ export function BillManagerDetailsScreen() {
                     />
 
                     {selectedTransaction?.transactionStatus == 0 && (
-                      <View>
+                      <View style={styles.row}>
                         <View style={{ width: 20 }}></View>
                         <GradientButton
                           title="Reject"

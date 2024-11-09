@@ -22,6 +22,11 @@ import { GradientButton } from "../components/common/GradientButton";
 import { GradientLine } from "../components/common/GradientLine";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ReservationService } from "../services/reservationService";
+import {
+  IReservationUpdate,
+  IUpdateReservationDetails,
+} from "../types/reservation.types";
+import { BillService } from "../services/billService";
 
 type ReservationStackNavigatorParamList = {
   ReservationDetails: {
@@ -53,7 +58,11 @@ export function ReservationDetailsScreen() {
   );
 
   function handleToBilling() {
-    navigation.navigate("Bill");
+    if (user?.roles.includes("tenant")) {
+      navigation.navigate("Bill");
+    } else {
+      navigation.navigate("BillManager");
+    }
   }
 
   async function fetchReservationDetails() {
@@ -107,6 +116,50 @@ export function ReservationDetailsScreen() {
     }
   };
 
+  async function updateReservationStatus(status: number) {
+    try {
+      const updateData: IReservationUpdate = {
+        reservation_id: reservation.reservationID,
+        reservation_status: status,
+      };
+
+      await ReservationService.updateReservationStatus(
+        updateData,
+        user?.token!
+      );
+
+      const billResponse = await BillService.createBill(
+        5,
+        reservationDetails?.tenantUsername!,
+        user?.username!,
+        user?.token!
+      );
+
+      await BillService.createBillItem(
+        billResponse.bill_id,
+        1,
+        "ค่ามัดจำ",
+        1,
+        3000,
+        user?.token!
+      );
+
+      const updateReservationDetails: IUpdateReservationDetails = {
+        reservation_id: reservationDetails?.reservationID!,
+        bill_id: billResponse.bill_id,
+        manager_username: user?.username!,
+      };
+      await ReservationService.updateReservationDetails(
+        updateReservationDetails,
+        user?.token!
+      );
+      fetchReservationDetails();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to update reservation details");
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {loading ? (
@@ -141,20 +194,54 @@ export function ReservationDetailsScreen() {
               </Text>
             </View>
 
-            {reservation.billID !== undefined && (
-              <View>
-                <View style={{ height: 16 }}></View>
-                <GradientLine />
-                <View style={{ height: 16 }}></View>
-                <GradientButton
-                  title="Pay"
-                  status="normal"
-                  onPress={() => {
-                    handleToBilling();
-                  }}
-                />
-              </View>
-            )}
+            {reservationDetails?.billID !== undefined &&
+              reservationDetails?.reservationStatus == 1 && (
+                <View>
+                  <View style={styles.line}>
+                    <Text style={styles.subTitle}>Bill:</Text>
+                    <View style={{ width: 8 }}></View>
+                    <Text style={styles.info}>
+                      {reservationDetails!.billID}
+                    </Text>
+                  </View>
+                  <View style={{ height: 16 }}></View>
+                  <GradientLine />
+                  <View style={{ height: 16 }}></View>
+                  <GradientButton
+                    title="Go Bill"
+                    status="normal"
+                    onPress={() => {
+                      handleToBilling();
+                    }}
+                  />
+                </View>
+              )}
+
+            {user?.roles.includes("manager") &&
+              reservationDetails?.reservationStatus == 0 &&
+              reservationDetails?.reservationStatus == 0 && (
+                <View>
+                  <View style={{ height: 16 }}></View>
+                  <View style={styles.rowButton}>
+                    <GradientButton
+                      title="Cancel"
+                      status="cancel"
+                      width={100}
+                      onPress={() => {
+                        updateReservationStatus(2);
+                      }}
+                    />
+                    <GradientButton
+                      title="Approve"
+                      status="approve"
+                      width={100}
+                      onPress={() => {
+                        updateReservationStatus(1);
+                      }}
+                    />
+                  </View>
+                </View>
+              )}
           </View>
         </ScrollView>
       )}
@@ -210,6 +297,10 @@ const styles = StyleSheet.create({
   verified: {
     color: colors.verified,
     fontSize: 16,
+  },
+  rowButton: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
   row: {
     flexDirection: "row",

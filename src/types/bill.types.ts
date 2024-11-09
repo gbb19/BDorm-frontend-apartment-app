@@ -10,3 +10,7 @@ export interface IBillResponse {
   create_date_time: string;
   bill_status: number;
 }
+
+export interface IBillCreateResponse {
+  bill_id: number;
+}

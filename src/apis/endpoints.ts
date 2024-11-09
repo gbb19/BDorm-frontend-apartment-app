@@ -19,19 +19,21 @@ export const ENDPOINTS = {
     GET_TRANSACTIONS_BY_BILL_ID: (billID: number) => `/transactions/${billID}`,
     GET_ALL_BILLS: "/bills",
     POST_CREATE_TRANSACTION: "/transactions",
-    UPDATE_TRANSACTION_STATUS: (transactionId: number, status: number) =>
+    PUT_UPDATE_TRANSACTION_STATUS: (transactionId: number, status: number) =>
       `/transactions/${transactionId}/status/${status}`,
-    UPDATE_BILL_STATUS: (billId: number, status: number) =>
+    PUT_UPDATE_BILL_STATUS: (billId: number, status: number) =>
       `/bills/${billId}/status/${status}`,
+    POST_CREATE_BILL: "/bills/create",
+    POST_CREATE_BILL_ITEM: "/bill-items/create",
   },
   RESERVATION: {
     POST_CREATE_RESERVATION: "/reservations/create", // สำหรับการสร้างการจอง
     GET_ALL_RESERVATIONS: "/reservations", // สำหรับดึงข้อมูลการจองทั้งหมด
-    PUT_UPDATE_STATUS: (reservationId: string) =>
-      `/reservations/${reservationId}/status`, // สำหรับอัปเดตสถานะการจองโดยระบุ reservationId
+    PUT_UPDATE_STATUS: `/reservations/status`, // สำหรับอัปเดตสถานะการจองโดยระบุ reservationId
     GET_RESERVATIONS_BY_USERNAME: (tenantUsername: string) =>
       `/reservations/tenant/${tenantUsername}`, // ฟังก์ชันรับ tenantUsername
     GET_RESERVATION_BY_ID: (reservationID: number) =>
       `/reservations/${reservationID}`,
+    PUT_UPDATE_DETAILS: "/reservation/details",
   },
 };

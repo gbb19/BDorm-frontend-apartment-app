@@ -15,7 +15,13 @@ export interface IReservationResponse {
   bill_id?: number;
 }
 
-
 export interface IReservationUpdate {
+  reservation_id: number;
   reservation_status: number;
+}
+
+export interface IUpdateReservationDetails {
+  reservation_id: number;
+  bill_id: number;
+  manager_username: string;
 }

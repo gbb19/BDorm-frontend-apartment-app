@@ -7,3 +7,7 @@ export interface IBillItemResponse {
   unit: number;
   unit_price: number;
 }
+
+export interface IBillItemCreateResponse {
+  message: string; // ข้อความตอบกลับ เช่น "Bill item created successfully"
+}
