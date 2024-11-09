@@ -8,3 +8,10 @@ export interface ITransactionCreate {
   bill_id: number;
   transaction_id: number;
 }
+
+export interface TransactionImage {
+  name: string;
+  downloadUrl: string;
+  size: number;
+  sha: string;
+}

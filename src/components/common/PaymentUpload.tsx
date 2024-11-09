@@ -13,7 +13,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import UUID from "react-native-uuid";
-import { uploadImageToGitHub } from "../../services/uploadToGitHub";
+import { uploadImageToGitHub } from "../../services/githubService";
 import { GradientButton } from "./GradientButton";
 import { GradientLine } from "./GradientLine";
 import { colors } from "../../styles/colors";

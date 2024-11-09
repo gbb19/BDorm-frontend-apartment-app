@@ -57,7 +57,6 @@ export class ContractService {
       }
 
       // แปลงข้อมูลจาก IContractCreate เป็น ContractDetail ก่อนส่งกลับ
-      console.log(response.data.contract); // ดูข้อมูลใน console
       return ContractDetail.fromResponse(response.data.contract);
     } catch (error) {
       throw new Error("Failed to fetch contract details");

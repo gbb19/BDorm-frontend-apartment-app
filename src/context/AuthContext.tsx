@@ -46,7 +46,6 @@ useEffect(() => {
         const userName = await AsyncStorage.getItem("username");
         const firstName = await AsyncStorage.getItem("firstName");
         const lastName = await AsyncStorage.getItem("lastName");
-        console.log(userRole)
 
         // แปลง userRole จาก string เป็น array
         let rolesArray;
