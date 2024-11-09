@@ -4,6 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../styles/colors";
 import { useAuth } from "../../context/AuthContext";
 import { BillManagerScreen } from "../../screens/BillManagerScreen";
+import { BillManagerStackNavigator } from "./BillManagerStackNavigator";
+import { RoomManagerStackNavigator } from "./RoomManagerStackNavigator copy";
 
 const Tab = createBottomTabNavigator();
 
@@ -25,10 +27,18 @@ export function EmployeeTabNavigator() {
         },
       }}
     >
-
       <Tab.Screen
-        name="BillManager"
-        component={BillManagerScreen}
+        name="Contracts"
+        component={RoomManagerStackNavigator}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Billing"
+        component={BillManagerStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt" size={size} color={color} />

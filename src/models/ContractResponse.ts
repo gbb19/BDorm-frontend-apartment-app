@@ -1,12 +1,12 @@
 // src/models/Contract.ts
-import { IContractResponse } from "../types/contract.types";
+import { IContractRoomResponse } from "../types/contract.types";
 
 export class ContractResponse {
   contractNumber: number;
   contractYear: number;
   contractRoomNumber: number;
 
-  constructor(data: IContractResponse) {
+  constructor(data: IContractRoomResponse) {
     this.contractNumber = data.contract_number
     this.contractYear = data.contract_year
     this.contractRoomNumber = data.contract_room_number
@@ -20,7 +20,7 @@ export class ContractResponse {
     };
   }
 
-  static fromResponse(data: IContractResponse): ContractResponse {
+  static fromResponse(data: IContractRoomResponse): ContractResponse {
     return new ContractResponse(data);
   }
 }

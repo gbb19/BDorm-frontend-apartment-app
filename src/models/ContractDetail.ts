@@ -1,5 +1,5 @@
 // src/models/Contract.ts
-import { IContractCreate } from "../types/contract.types";
+import { IContractResponse } from "../types/contract.types";
 
 export class ContractDetail {
   contractNumber: number;
@@ -10,7 +10,7 @@ export class ContractDetail {
   electricityRate: number;
   internetFee: number;
 
-  constructor(data: IContractCreate) {
+  constructor(data: IContractResponse) {
     this.contractNumber = data.contract_number;
     this.contractYear = data.contract_year;
     this.contractRoomNumber = data.contract_room_number;
@@ -41,7 +41,7 @@ export class ContractDetail {
     };
   }
 
-  static fromResponse(data: IContractCreate): ContractDetail {
+  static fromResponse(data: IContractResponse): ContractDetail {
     return new ContractDetail(data);
   }
 }

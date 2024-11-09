@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../styles/colors";
-import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { BillItemTable } from "../components/common/BillItemTable";
 import { BillItem } from "../models/BillItem";
 import { BillService } from "../services/billService";
@@ -39,14 +39,14 @@ type BillStackNavigatorParamList = {
   };
 };
 
-type BillDetailsScreenRouteProp = RouteProp<
+type BillManagerDetailsScreenRouteProp = RouteProp<
   BillStackNavigatorParamList,
   "BillDetails"
 >;
 
-export function BillDetailsScreen() {
+export function BillManagerDetailsScreen() {
   const { user } = useAuth();
-  const route = useRoute<BillDetailsScreenRouteProp>();
+  const route = useRoute<BillManagerDetailsScreenRouteProp>();
   const { bill } = route.params;
 
   const [loadingBill, setLoadingBill] = useState(true);
@@ -135,8 +135,46 @@ export function BillDetailsScreen() {
   }
 
   function onTransactionFileCloseButtonClick() {
-    setModalTransactionFile(false); // ปิด modal
-    setSelectedTransaction(null); // รีเซ็ตข้อมูล selectedTransaction
+    setModalTransactionFile(false);
+    setSelectedTransaction(null);
+  }
+
+  async function onTransactionFileApproveButtonClick() {
+    try {
+      await BillService.updateTransactionStatus(
+        selectedTransaction?.transactionID!,
+        1,
+        user?.token!
+      );
+      alert("Transaction approved successfully");
+
+      if (bill.billStatus == 1) {
+        await BillService.updateBillStatus(bill.billID, 2, user?.token!);
+      }
+    } catch (error) {
+      alert("Failed to approve transaction");
+    } finally {
+      fetchTransactions();
+      setModalTransactionFile(false);
+      setSelectedTransaction(null);
+    }
+  }
+
+  async function onTransactionFileRejectButtonClick() {
+    try {
+      await BillService.updateTransactionStatus(
+        selectedTransaction?.transactionID!,
+        2,
+        user?.token!
+      );
+      alert("Transaction rejected successfully");
+    } catch (error) {
+      alert("Failed to reject transaction");
+    } finally {
+      fetchTransactions();
+      setModalTransactionFile(false);
+      setSelectedTransaction(null);
+    }
   }
 
   // ฟังก์ชันสำหรับแสดงรูปภาพใน modal
@@ -232,10 +270,31 @@ export function BillDetailsScreen() {
                   <View style={styles.row}>
                     <GradientButton
                       title="Close"
-                      status="normal"
+                      status="cancel"
                       width={100}
                       onPress={onTransactionFileCloseButtonClick}
                     />
+
+                    {selectedTransaction?.transactionStatus == 0 && (
+                      <View>
+                        <View style={{ width: 20 }}></View>
+                        <GradientButton
+                          title="Reject"
+                          status="reject"
+                          width={100}
+                          onPress={onTransactionFileRejectButtonClick}
+                        />
+
+                        <View style={{ width: 20 }}></View>
+
+                        <GradientButton
+                          title="Approve"
+                          status="approve"
+                          width={100}
+                          onPress={onTransactionFileApproveButtonClick}
+                        />
+                      </View>
+                    )}
                   </View>
                 </View>
               </View>
@@ -263,18 +322,9 @@ export function BillDetailsScreen() {
           billItems && <BillItemTable billItems={billItems} />
         )}
 
-        {bill.billStatus !== 2 && (
-          <PaymentUpload
-            qrCodeImage={require("../../assets/qr-code.png")}
-            token={user?.token!}
-            bill={bill}
-            fetchTransaction={fetchTransactions}
-          />
-        )}
-
         {transactions?.length! > 0 && (
           <View>
-            <Text style={styles.title}>History</Text>
+            <Text style={styles.title}>Transactions</Text>
             <GradientLine />
 
             <FlatList

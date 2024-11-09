@@ -15,6 +15,7 @@ export function BillStackNavigator() {
       <Stack.Screen
         name="Bill"
         component={BillScreen}
+        initialParams={{ topbar: true }} // ส่ง props ไปที่ BillScreen
         options={{ headerShown: false }} // ซ่อน header สำหรับ MyRoomScreen
       />
       <Stack.Screen

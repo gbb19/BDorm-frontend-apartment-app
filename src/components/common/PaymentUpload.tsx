@@ -18,6 +18,7 @@ import { GradientButton } from "./GradientButton";
 import { GradientLine } from "./GradientLine";
 import { colors } from "../../styles/colors";
 import { BillService } from "../../services/billService";
+import { Bill } from "../../models/Bill";
 
 // Types
 interface FileType {
@@ -35,12 +36,18 @@ interface Transaction {
 
 interface Props {
   qrCodeImage: any;
-  billID: number;
+  bill: Bill;
   token: string;
+  fetchTransaction: () => void;
 }
 
 // Component
-export function PaymentUpload({ qrCodeImage, billID, token }: Props) {
+export function PaymentUpload({
+  qrCodeImage,
+  bill,
+  token,
+  fetchTransaction,
+}: Props) {
   // State
   const [modalQrVisible, setModalQrVisible] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
@@ -120,7 +127,14 @@ export function PaymentUpload({ qrCodeImage, billID, token }: Props) {
   async function handleTransactionCreated(): Promise<number> {
     try {
       // Assuming BillService.createTransaction returns a transaction ID
-      const transactionID = await BillService.createTransaction(billID, token);
+      const transactionID = await BillService.createTransaction(
+        bill.billID,
+        token
+      );
+      if (bill.billStatus == 0) {
+        await BillService.updateBillStatus(bill.billID, 1, token);
+      }
+
       return transactionID.transaction_id; // Return the transaction ID
     } catch (err) {
       console.error(err);
@@ -161,6 +175,7 @@ export function PaymentUpload({ qrCodeImage, billID, token }: Props) {
 
             // แจ้ง parent component
             Alert.alert("Success", "Files uploaded successfully");
+            fetchTransaction();
             setTempSelectedFiles([]);
             setModalQrVisible(false);
             setStep(1);

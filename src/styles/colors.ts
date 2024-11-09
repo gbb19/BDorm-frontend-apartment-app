@@ -15,4 +15,7 @@ export const colors = {
   created: "#999",
   paid: "#E9CC59",
   pink: "#FF6CAB",
+  red: "#d10a32",
+  green: "#0ad150",
+  border: "#E8E8E8"
 };

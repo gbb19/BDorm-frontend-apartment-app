@@ -4,21 +4,24 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { MyRoomScreen } from "../../screens/MyRoomScreen";
 import { ContractDetailsScreen } from "../../screens/ContractDetailsScreen";
 import { colors } from "../../styles/colors";
+import { BillScreen } from "../../screens/BillScreen";
+import { BillDetailsScreen } from "../../screens/BillDetailsScreen";
+import { BillManagerScreen } from "../../screens/BillManagerScreen";
+import { BillManagerDetailsScreen } from "../../screens/BillManagerDetailsScreen";
 
 const Stack = createStackNavigator();
 
-export function RoomStackNavigator() {
+export function BillManagerStackNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="BillManager">
       <Stack.Screen
-        name="MyRoom"
-        component={MyRoomScreen}
+        name="BillManager"
+        component={BillManagerScreen}
         options={{ headerShown: false }} // ซ่อน header สำหรับ MyRoomScreen
       />
-
       <Stack.Screen
-        name="ContractDetail"
-        component={ContractDetailsScreen}
+        name="BillManagerDetails"
+        component={BillManagerDetailsScreen}
         options={{
           headerShown: true,
 

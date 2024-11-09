@@ -4,12 +4,15 @@ import { RoomStackNavigator } from "./RoomStackNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../styles/colors";
 import { useAuth } from "../../context/AuthContext";
-import { BillScreen } from "../../screens/BillScreen";
 import { BillStackNavigator } from "./BillStackNavigator";
+import { ReservationStackNavigator } from "./ReservationStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
-export function TenantTabNavigator() {
+interface TenantTabNavigatorProps {
+  initial:string
+}
+export function TenantTabNavigator({initial}:TenantTabNavigatorProps) {
   const { user } = useAuth();
 
   useEffect(() => {
@@ -18,7 +21,7 @@ export function TenantTabNavigator() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName={initial}
       screenOptions={{
         headerShown: false, // ปิด header ของ Tab Navigator
         tabBarActiveTintColor: colors.gradient_primary, // สีของไอคอนเมื่อแท็บถูกเลือก
@@ -34,6 +37,16 @@ export function TenantTabNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" color={color} size={size} /> // ไอคอนสำหรับแท็บนี้
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Reservations"
+        component={ReservationStackNavigator}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" color={color} size={size} /> // ไอคอนสำหรับแท็บนี้
           ),
         }}
       />

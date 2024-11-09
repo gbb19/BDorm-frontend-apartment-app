@@ -65,6 +65,7 @@ export class BillService {
       throw new Error("Failed to fetch bill items");
     }
   }
+
   static async getTransactionsByBillID(
     billID: number,
     token: string
@@ -116,6 +117,71 @@ export class BillService {
       // จัดการข้อผิดพลาด
       console.error("Error creating transaction:", error);
       throw new Error("Failed to create transaction");
+    }
+  }
+  static async getAllBills(token: string): Promise<Bill[]> {
+    try {
+      const response = await axios.get<{ bills: IBillResponse[] }>(
+        ENDPOINTS.BILL.GET_ALL_BILLS, // ใช้ endpoint สำหรับดึงข้อมูลบิลทั้งหมด
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ใส่ token ใน header
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (!response.data.bills) {
+        return [];
+      }
+
+      return response.data.bills.map((bill) => Bill.fromResponse(bill));
+    } catch (error) {
+      throw new Error("Failed to fetch all bills");
+    }
+  }
+
+  static async updateTransactionStatus(
+    transactionId: number,
+    status: number,
+    token: string
+  ): Promise<void> {
+    try {
+      await axios.put(
+        ENDPOINTS.BILL.UPDATE_TRANSACTION_STATUS(transactionId, status),
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update transaction status:", error);
+      throw new Error("Failed to update transaction status");
+    }
+  }
+
+  static async updateBillStatus(
+    billId: number,
+    status: number,
+    token: string
+  ): Promise<void> {
+    try {
+      await axios.put(
+        ENDPOINTS.BILL.UPDATE_BILL_STATUS(billId, status), // กำหนด endpoint สำหรับการอัปเดตสถานะ
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update bill status:", error);
+      throw new Error("Failed to update bill status");
     }
   }
 }

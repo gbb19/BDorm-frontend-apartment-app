@@ -25,11 +25,11 @@ export function AppNavigator() {
     <NavigationContainer>
       {isLoggedIn ? (
         user?.roles?.includes("tenant") ? (
-          <TenantTabNavigator />
+          <TenantTabNavigator initial="Home"/>
         ) : isEmployee ? (
           <EmployeeTabNavigator />
         ) : (
-          <TenantTabNavigator /> 
+          <TenantTabNavigator initial="Home" /> 
         )
       ) : (
         <AuthNavigator />

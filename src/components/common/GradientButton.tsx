@@ -14,7 +14,8 @@ interface GradientButtonProps {
   title: string; // ชื่อของปุ่ม
   width?: number; // ความกว้างของปุ่ม
   height?: number; // ความสูงของปุ่ม
-  status: "reject" | "disable" | "normal"; // สถานะของปุ่ม (ใช้ string literals เพื่อจำกัดค่าที่สามารถใช้ได้)
+  status: "cancel" | "reject" | "normal" | "approve"; // สถานะของปุ่ม (ใช้ string literals เพื่อจำกัดค่าที่สามารถใช้ได้)
+  fontSize?: number;
 }
 
 export function GradientButton({
@@ -23,12 +24,18 @@ export function GradientButton({
   width,
   height,
   status,
+  fontSize = 20,
 }: GradientButtonProps) {
   const [state, setState] = useState<string>(status);
 
-  if (state === "reject") {
+  const textStyle = {
+    fontSize, 
+    color: colors.white,
+  };
+
+  if (state === "cancel") {
     return (
-      <TouchableOpacity style={styles.card} onPress={onPress}>
+      <TouchableOpacity onPress={onPress}>
         <LinearGradient
           style={{
             height,
@@ -37,34 +44,55 @@ export function GradientButton({
             alignItems: "center",
             borderRadius: 10,
           }}
-          colors={[colors.pink, colors.secondary]}
+          colors={[colors.pink, colors.gradient_secondary]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <Text style={styles.textTitle}>{title}</Text>
+          <Text style={textStyle}>{title}</Text>
         </LinearGradient>
       </TouchableOpacity>
     );
-  } else if (state === "disable") {
+  } else if (state === "reject") {
     return (
-      <LinearGradient
-        style={{
-          height,
-          padding: 8,
-          width,
-          alignItems: "center",
-          borderRadius: 10,
-        }}
-        colors={[colors.grey, colors.grey]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={styles.textTitle}>{title}</Text>
-      </LinearGradient>
+      <TouchableOpacity onPress={onPress}>
+        <LinearGradient
+          style={{
+            height,
+            width,
+            padding: 8,
+            alignItems: "center",
+            borderRadius: 10,
+          }}
+          colors={[colors.red, colors.reject]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <Text style={textStyle}>{title}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  } else if (state === "approve") {
+    return (
+      <TouchableOpacity onPress={onPress}>
+        <LinearGradient
+          style={{
+            height,
+            width,
+            padding: 8,
+            alignItems: "center",
+            borderRadius: 10,
+          }}
+          colors={[colors.paid, colors.approve]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <Text style={textStyle}>{title}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
     );
   } else {
     return (
-      <TouchableOpacity style={styles.card} onPress={onPress}>
+      <TouchableOpacity onPress={onPress}>
         <LinearGradient
           style={{
             height,
@@ -77,18 +105,9 @@ export function GradientButton({
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <Text style={styles.textTitle}>{title}</Text>
+          <Text style={textStyle}>{title}</Text>
         </LinearGradient>
       </TouchableOpacity>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  card: {},
-  textTitle: {
-    fontSize: 20,
-    color: colors.white,
-    alignItems: "center",
-  },
-});

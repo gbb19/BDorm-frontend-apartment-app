@@ -10,7 +10,11 @@ import { useAuth } from "../context/AuthContext";
 import { BillService } from "../services/billService";
 import { FlatList } from "react-native";
 import { DateHeader } from "../components/common/DateHeader";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import {
+  ParamListBase,
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 interface BillsByDate {
@@ -18,8 +22,12 @@ interface BillsByDate {
   bills: Bill[];
 }
 
-export function BillScreen() {
+interface BillScreenProps {
+  route: any; // รับ route props
+}
+export function BillScreen({ route }: BillScreenProps) {
   const { user } = useAuth();
+  const { topbar } = route.params; // ดึง topbar จาก params
   const [allBillsByDate, setAllBillsByDate] = useState<BillsByDate[] | null>(
     null
   );
@@ -31,14 +39,13 @@ export function BillScreen() {
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
-  useEffect(() => {
-    if (!allBillsByDate) {
+  useFocusEffect(
+    React.useCallback(() => {
       fetchBills();
-    }
-  }, [allBillsByDate]);
+    }, [])
+  );
 
   async function fetchBills() {
     setLoading(true);
@@ -87,13 +94,15 @@ export function BillScreen() {
     }
   }
 
-  function handleToDetails(bill: Bill){
+  function handleToDetails(bill: Bill) {
     navigation.navigate("BillDetails", { bill });
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      {topbar && (
       <TopBar />
+      )}
       <SearchBar
         placeholder="Search bills..."
         onSearch={handleSearch}

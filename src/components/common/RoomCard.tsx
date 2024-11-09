@@ -22,7 +22,7 @@ export function RoomCard({ room,onClick }: RoomCardProps) {
         <View style={styles.cardContent}>
           <View>
             <Text style={styles.roomText}>Room-{room}</Text>
-            <Text style={styles.floorText}>Floor {room % 100}</Text>
+            <Text style={styles.floorText}>Floor {Math.floor(room / 100)}</Text>
           </View>
         </View>
       </View>
