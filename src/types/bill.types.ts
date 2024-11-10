@@ -9,6 +9,7 @@ export interface IBillResponse {
   payment_term: number;
   create_date_time: string;
   bill_status: number;
+  tenant_username:string;
 }
 
 export interface IBillCreateResponse {

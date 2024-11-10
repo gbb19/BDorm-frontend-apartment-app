@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
-  View,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
   StyleSheet,
   Text,
-  Modal,
-  ActivityIndicator,
-  FlatList,
   TouchableOpacity,
-  Dimensions,
-  Image,
+  View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { colors } from "../styles/colors";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { BillItemTable } from "../components/common/BillItemTable";
-import { BillItem } from "../models/BillItem";
-import { BillService } from "../services/billService";
-import { useAuth } from "../context/AuthContext";
-import { ScrollView } from "react-native-gesture-handler";
-import { Bill } from "../models/Bill";
-import { GradientLine } from "../components/common/GradientLine";
-import { GradientButton } from "../components/common/GradientButton";
-import { TransactionCard } from "../components/common/TransactionCard";
-import { getImagesFromGithub } from "../services/githubService";
-import { Transaction } from "../models/Transaction";
-import { TransactionImage } from "../types/transaction.types";
-import { PaymentUpload } from "../components/common/PaymentUpload";
-import { MaterialIcons } from "@expo/vector-icons";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {colors} from "../styles/colors";
+import {RouteProp, useRoute} from "@react-navigation/native";
+import {BillItemTable} from "../components/common/BillItemTable";
+import {BillItem} from "../models/BillItem";
+import {BillService} from "../services/billService";
+import {useAuth} from "../context/AuthContext";
+import {ScrollView} from "react-native-gesture-handler";
+import {Bill} from "../models/Bill";
+import {GradientLine} from "../components/common/GradientLine";
+import {GradientButton} from "../components/common/GradientButton";
+import {TransactionCard} from "../components/common/TransactionCard";
+import {getImagesFromGithub} from "../services/githubService";
+import {Transaction} from "../models/Transaction";
+import {TransactionImage} from "../types/transaction.types";
+import {MaterialIcons} from "@expo/vector-icons";
 
 const GITHUB_TOKEN = process.env.EXPO_PUBLIC_GITHUB_TOKEN;
 
@@ -45,9 +44,9 @@ type BillManagerDetailsScreenRouteProp = RouteProp<
 >;
 
 export function BillManagerDetailsScreen() {
-  const { user } = useAuth();
+  const {user} = useAuth();
   const route = useRoute<BillManagerDetailsScreenRouteProp>();
-  const { bill } = route.params;
+  const {bill} = route.params;
 
   const [loadingBill, setLoadingBill] = useState(true);
   const [billItems, setBillItems] = useState<BillItem[] | null>(null);
@@ -66,6 +65,23 @@ export function BillManagerDetailsScreen() {
   const [selectedImage, setSelectedImage] = useState<TransactionImage | null>(
     null
   );
+
+  const [showChargeBillModal, setShowChargeBillModal] = useState(false);
+  const [isLatePayment, setIsLatePayment] = useState(false);
+  const [daysLate, setDaysLate] = useState(0);
+
+  const checkLatePayment = () => {
+    if (bill.paymentTerm === -1) return false;
+
+    const createDate = new Date(bill.createDateTime);
+    const currentDate = new Date();
+    const diffTime = Math.abs(currentDate.getTime() - createDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    setDaysLate(Math.max(0, diffDays - bill.paymentTerm));
+    return diffDays > bill.paymentTerm;
+  };
+
 
   useEffect(() => {
     if (!billItems) {
@@ -139,26 +155,104 @@ export function BillManagerDetailsScreen() {
     setSelectedTransaction(null);
   }
 
+
   async function onTransactionFileApproveButtonClick() {
     try {
+      // Check for late payment first
+      if (bill.paymentTerm !== -1) {
+        const isLate = checkLatePayment();
+        if (isLate) {
+          setIsLatePayment(true);
+          setShowChargeBillModal(true);
+          return;
+        }
+      }
+
+      await processApproval();
+    } catch (error) {
+      alert("Failed to approve transaction");
+    }
+  }
+
+  async function processApproval(createChargeBill = false) {
+    try {
+      // Approve the transaction
       await BillService.updateTransactionStatus(
         selectedTransaction?.transactionID!,
         1,
         user?.token!
       );
-      alert("Transaction approved successfully");
+
+      // Create charge bill if requested
+      if (createChargeBill) {
+
+        const billResponse = await BillService.createBill(-1, bill.tenantUsername, user?.username!, user?.token!);
+
+        const createDate = new Date(bill.createDateTime);
+        const currentDate = new Date();
+        const diffTime = Math.abs(currentDate.getTime() - createDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        await BillService.createBillItem(billResponse.bill_id, 1, 'ค่าปรับ', diffDays, 100, user?.token!)
+        alert("Transaction approved and late payment charge bill created");
+      } else {
+        alert("Transaction approved successfully");
+      }
 
       if (bill.billStatus == 1) {
         await BillService.updateBillStatus(bill.billID, 2, user?.token!);
       }
     } catch (error) {
-      alert("Failed to approve transaction");
+      alert("Failed to process approval");
     } finally {
+      setShowChargeBillModal(false);
       fetchTransactions();
       setModalTransactionFile(false);
       setSelectedTransaction(null);
     }
   }
+
+  function ChargeBillConfirmationModal() {
+    return (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showChargeBillModal}
+        onRequestClose={() => setShowChargeBillModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.stepContainer}>
+            <View style={styles.stepSection}>
+              <Text style={styles.stepTitle}>Late Payment Detected</Text>
+            </View>
+            <GradientLine/>
+            <View style={{padding: 20}}>
+              <Text style={styles.modalText}>
+                This payment is {daysLate} days late.{"\n"}
+                Would you like to create a charge bill?
+              </Text>
+              <View style={styles.buttonRow}>
+                <GradientButton
+                  title="No Charge"
+                  status="cancel"
+                  width={140}
+                  onPress={() => processApproval(false)}
+                />
+                <View style={{width: 20}}/>
+                <GradientButton
+                  title="Create Charge"
+                  status="approve"
+                  width={140}
+                  onPress={() => processApproval(true)}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
 
   async function onTransactionFileRejectButtonClick() {
     try {
@@ -229,7 +323,7 @@ export function BillManagerDetailsScreen() {
       >
         {loadingTransaction || loadingImage ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large"/>
           </View>
         ) : (
           <View style={styles.modalContainer}>
@@ -237,11 +331,11 @@ export function BillManagerDetailsScreen() {
               <View style={styles.stepSection}>
                 <Text style={styles.stepTitle}>Transaction Files</Text>
               </View>
-              <GradientLine />
-              <View style={{ padding: 10 }}>
+              <GradientLine/>
+              <View style={{padding: 10}}>
                 <FlatList
                   data={images}
-                  renderItem={({ item }) => (
+                  renderItem={({item}) => (
                     <View>
                       <TouchableOpacity
                         onPress={() => onClickImageButtonClick(item)} // เมื่อคลิกที่ไฟล์ จะให้เปิดรูปภาพใน modal
@@ -277,7 +371,7 @@ export function BillManagerDetailsScreen() {
 
                     {selectedTransaction?.transactionStatus == 0 && (
                       <View style={styles.row}>
-                        <View style={{ width: 20 }}></View>
+                        <View style={{width: 20}}></View>
                         <GradientButton
                           title="Reject"
                           status="reject"
@@ -285,7 +379,7 @@ export function BillManagerDetailsScreen() {
                           onPress={onTransactionFileRejectButtonClick}
                         />
 
-                        <View style={{ width: 20 }}></View>
+                        <View style={{width: 20}}></View>
 
                         <GradientButton
                           title="Approve"
@@ -312,25 +406,25 @@ export function BillManagerDetailsScreen() {
           <Text style={styles.title}>Bill: {bill.billID}</Text>
           <Text style={styles.timestamp}>{bill.createDateTime}</Text>
         </View>
-        <GradientLine />
+        <GradientLine/>
 
         {error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : loadingBill ? (
           <Text style={styles.loadingText}>Loading...</Text>
         ) : (
-          billItems && <BillItemTable billItems={billItems} />
+          billItems && <BillItemTable billItems={billItems}/>
         )}
 
         {transactions?.length! > 0 && (
           <View>
             <Text style={styles.title}>Transactions</Text>
-            <GradientLine />
+            <GradientLine/>
 
             <FlatList
               data={transactions}
-              style={{ paddingTop: 16 }}
-              renderItem={({ item }) => (
+              style={{paddingTop: 16}}
+              renderItem={({item}) => (
                 <TransactionCard
                   transactionID={item.transactionID}
                   status={item.transactionStatus}
@@ -343,13 +437,14 @@ export function BillManagerDetailsScreen() {
           </View>
         )}
 
-        {loadingTransaction && <Text>Loading...</Text>}
+        {ChargeBillConfirmationModal()}
         {ModalImageShow()}
         {ModalTransactionFileList()}
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
@@ -463,5 +558,18 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalText: {
+    color: colors.white,
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 24,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
 });

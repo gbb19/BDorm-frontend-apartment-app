@@ -36,4 +36,11 @@ export const ENDPOINTS = {
       `/reservations/${reservationID}`,
     PUT_UPDATE_DETAILS: "/reservation/details",
   },
+  LEDGER: {
+    POST_CREATE_LEDGER: "/ledgers/create", // API endpoint สำหรับการสร้าง Ledger
+    POST_CREATE_LEDGER_ITEM: "/ledger-items/create",
+    PUT_UPDATE_LEDGER_ITEM: "/ledger-items/update",
+    PUT_UPDATE_LEDGER_ITEM_STATUS: "/ledger-items/status/update",
+    GET_BY_MONTH_AND_YEAR: (month: number, year: number) => `/ledger-items/${month}/${year}`,
+  },
 };

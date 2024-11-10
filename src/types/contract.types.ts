@@ -24,3 +24,12 @@ export interface IContractCreate {
   internet_service_fee: number;
   username: string;
 }
+
+
+export interface IContractLedgerResponse {
+  rental_price: number;
+  water_rate: number;
+  electricity_rate: number;
+  internet_service_fee: number;
+  username: string;
+}

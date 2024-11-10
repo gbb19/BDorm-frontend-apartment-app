@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../styles/colors";
-import { useAuth } from "../../context/AuthContext";
-import { BillManagerStackNavigator } from "./BillManagerStackNavigator";
-import { RoomManagerStackNavigator } from "./RoomManagerStackNavigator copy";
-import { ReservationManagerStackNavigator } from "./ReservationManagerStackNavigator";
+import React, {useEffect} from "react";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import {Ionicons} from "@expo/vector-icons";
+import {colors} from "../../styles/colors";
+import {useAuth} from "../../context/AuthContext";
+import {BillManagerStackNavigator} from "./BillManagerStackNavigator";
+import {RoomManagerStackNavigator} from "./RoomManagerStackNavigator copy";
+import {ReservationManagerStackNavigator} from "./ReservationManagerStackNavigator";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import {RecordStackNavigator} from "./RecordStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
 export function EmployeeTabNavigator() {
-  const { user } = useAuth();
+  const {user} = useAuth();
 
   useEffect(() => {
     console.log(user);
@@ -27,33 +29,49 @@ export function EmployeeTabNavigator() {
         },
       }}
     >
+      {user?.roles.includes("manager") && (
+        <>
+          <Tab.Screen
+            name="Contracts"
+            component={RoomManagerStackNavigator}
+            options={{
+              tabBarIcon: ({color, size}) => (
+                <Ionicons name="document" size={size} color={color}/>
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Reservations"
+            component={ReservationManagerStackNavigator}
+            options={{
+              tabBarIcon: ({color, size}) => (
+                <Ionicons name="calendar" color={color} size={size}/> // ไอคอนสำหรับแท็บนี้
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Billing"
+            component={BillManagerStackNavigator}
+            options={{
+              tabBarIcon: ({color, size}) => (
+                <Ionicons name="receipt" size={size} color={color}/>
+              ),
+            }}
+          />
+        </>
+      )}
+
       <Tab.Screen
-        name="Contracts"
-        component={RoomManagerStackNavigator}
+        name="Record"
+        component={RecordStackNavigator}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document" size={size} color={color} />
+          tabBarIcon: ({color, size}) => (
+            <MaterialIcons name="edit-note" size={size} color={color}/>
           ),
         }}
       />
-      <Tab.Screen
-        name="Reservations"
-        component={ReservationManagerStackNavigator}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" color={color} size={size} /> // ไอคอนสำหรับแท็บนี้
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Billing"
-        component={BillManagerStackNavigator}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt" size={size} color={color} />
-          ),
-        }}
-      />
+
+
     </Tab.Navigator>
   );
 }

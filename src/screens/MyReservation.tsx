@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TopBar } from "../components/common/TopBar";
-import { colors } from "../styles/colors";
-import { ScrollView } from "react-native";
-import { GradientLine } from "../components/common/GradientLine";
-import { useAuth } from "../context/AuthContext";
+import React, {useState} from "react";
+import {View, StyleSheet, Text, ActivityIndicator} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {TopBar} from "../components/common/TopBar";
+import {colors} from "../styles/colors";
+import {ScrollView} from "react-native";
+import {GradientLine} from "../components/common/GradientLine";
+import {useAuth} from "../context/AuthContext";
 import {
   ParamListBase,
   useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
-import { Reservation } from "../models/Reservation";
-import { ReservationService } from "../services/reservationService";
-import { ReservationCard } from "../components/common/ReservationCard";
-import { ENDPOINTS } from "../apis/endpoints";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { GradientButton } from "../components/common/GradientButton";
+import {Reservation} from "../models/Reservation";
+import {ReservationService} from "../services/reservationService";
+import {ReservationCard} from "../components/common/ReservationCard";
+import {ENDPOINTS} from "../apis/endpoints";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {GradientButton} from "../components/common/GradientButton";
 
 export function MyReservation() {
-  const { user } = useAuth();
+  const {user} = useAuth();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +42,7 @@ export function MyReservation() {
   function handleToReservationForm() {
     navigation.navigate("ReservationForm", {});
   }
+
   async function fetchReservations() {
     setLoading(true);
     try {
@@ -60,7 +61,7 @@ export function MyReservation() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TopBar />
+      <TopBar/>
       <ScrollView style={styles.content}>
         <View style={styles.row}>
           <Text
@@ -81,11 +82,11 @@ export function MyReservation() {
             }}
           />
         </View>
-        <GradientLine />
+        <GradientLine/>
         <View style={styles.cardList}>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" />
+              <ActivityIndicator size="large"/>
             </View>
           ) : (
             reservations.map((reservation, index) => (
