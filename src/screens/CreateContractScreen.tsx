@@ -12,10 +12,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
 import { colors } from "../styles/colors";
 import { Tenant } from "../models/Tenant";
-import { UserService } from "../services/userService";
+import { UserController } from "../controllers/userController";
 import { useAuth } from "../context/AuthContext";
 import { IContractCreate } from "../types/contract.types";
-import { ContractService } from "../services/contractService";
+import { ContractController } from "../controllers/contractController";
 import { GradientButton } from "../components/common/GradientButton";
 
 export function CreateContractScreen() {
@@ -55,7 +55,7 @@ export function CreateContractScreen() {
 
   async function fetchTenants() {
     try {
-      const tenantData = await UserService.getAllTenants(user?.token!);
+      const tenantData = await UserController.getAllTenants(user?.token!);
       setTenants(tenantData);
     } catch (err) {
       setError("Failed to fetch tenants");
@@ -87,7 +87,7 @@ export function CreateContractScreen() {
         username: selectedTenant,
       };
 
-      await ContractService.createContract(contractData, user?.token!);
+      await ContractController.createContract(contractData, user?.token!);
       Alert.alert("Success", "Contract created successfully");
       // Reset form
       setSelectedTenant(null);

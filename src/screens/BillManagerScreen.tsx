@@ -7,7 +7,7 @@ import { BillCard } from "../components/common/BillCard";
 import { SearchBar } from "../components/common/SearchBar";
 import { Bill } from "../models/Bill";
 import { useAuth } from "../context/AuthContext";
-import { BillService } from "../services/billService";
+import { BillController } from "../controllers/billController";
 import { FlatList } from "react-native";
 import { DateHeader } from "../components/common/DateHeader";
 import {
@@ -51,7 +51,7 @@ export function BillManagerScreen({ route }: BillManagerScreenProps) {
   async function fetchBills() {
     setLoading(true);
     try {
-      const bills = await BillService.getAllBills(user?.token!);
+      const bills = await BillController.getAllBills(user?.token!);
       const groupedBills = groupBillsByDate(bills);
       setAllBillsByDate(groupedBills);
       setFilteredBillsByDate(groupedBills);

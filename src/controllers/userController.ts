@@ -6,7 +6,7 @@ import { ITenantResponse } from "../types/tenant.tpyes";
 import { IUserCreate, IUserLogin, IUserResponse } from "../types/user.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export class UserService {
+export class UserController {
   static async login(user: IUserLogin): Promise<User> {
     try {
       const response = await axios.post(

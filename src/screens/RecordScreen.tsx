@@ -9,8 +9,8 @@ import {GradientLine} from "../components/common/GradientLine";
 import {LedgerItem} from "../models/LedgerItem";
 import {useAuth} from "../context/AuthContext";
 import {RecordCard} from "../components/common/RecordCard";
-import {LedgerService} from "../services/LedgerService";
-import {BillService} from "../services/billService";
+import {LedgerController} from "../controllers/LedgerController";
+import {BillController} from "../controllers/billController";
 import {GradientButton} from "../components/common/GradientButton";
 
 
@@ -36,7 +36,7 @@ export function RecordScreen() {
   async function fetchLedgerItem() {
     setLoading(true);
     try {
-      const data = await LedgerService.getLedgerItemsByMonthAndYear(selectedMonth + 1, selectedYear, user?.token!)
+      const data = await LedgerController.getLedgerItemsByMonthAndYear(selectedMonth + 1, selectedYear, user?.token!)
       setLedgerItems(data)
     } catch (err) {
       console.error(err);
@@ -48,36 +48,36 @@ export function RecordScreen() {
 
   async function handleCreateLedger() {
     try {
-      await LedgerService.createLedger(selectedMonth + 1, selectedYear, user?.username!, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 101, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 102, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 103, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 104, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 105, 0, 0, user?.token!)
+      await LedgerController.createLedger(selectedMonth + 1, selectedYear, user?.username!, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 101, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 102, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 103, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 104, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 105, 0, 0, user?.token!)
 
 
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 201, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 202, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 203, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 204, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 205, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 206, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 201, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 202, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 203, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 204, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 205, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 206, 0, 0, user?.token!)
 
 
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 301, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 302, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 303, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 304, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 305, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 306, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 301, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 302, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 303, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 304, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 305, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 306, 0, 0, user?.token!)
 
 
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 401, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 402, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 403, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 404, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 405, 0, 0, user?.token!)
-      await LedgerService.createLedgerItem(selectedMonth + 1, selectedYear, 406, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 401, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 402, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 403, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 404, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 405, 0, 0, user?.token!)
+      await LedgerController.createLedgerItem(selectedMonth + 1, selectedYear, 406, 0, 0, user?.token!)
 
       fetchLedgerItem()
     } catch (err) {
@@ -159,7 +159,7 @@ export function RecordScreen() {
 
   const handleUpdate = async (updatedItem: LedgerItem) => {
     try {
-      await LedgerService.updateLedgerItem(updatedItem.ledgerMonth, updatedItem.ledgerYear, updatedItem.ledgerItemRoomNumber, updatedItem.waterUnit, updatedItem.electricityUnit, user?.token!)
+      await LedgerController.updateLedgerItem(updatedItem.ledgerMonth, updatedItem.ledgerYear, updatedItem.ledgerItemRoomNumber, updatedItem.waterUnit, updatedItem.electricityUnit, user?.token!)
       fetchLedgerItem()
     } catch (error) {
       throw error;
@@ -168,11 +168,11 @@ export function RecordScreen() {
 
   const handleIssue = async (item: LedgerItem) => {
     try {
-      await LedgerService.updateLedgerItemStatus(item.ledgerMonth, item.ledgerYear, item.ledgerItemRoomNumber, user?.token!)
-      const billResponse = await BillService.createBill(-1, item.contract.username, user?.username!, user?.token!)
+      await LedgerController.updateLedgerItemStatus(item.ledgerMonth, item.ledgerYear, item.ledgerItemRoomNumber, user?.token!)
+      const billResponse = await BillController.createBill(5, item.contract.username, user?.username!, user?.token!)
 
 
-      await BillService.createBillItem(
+      await BillController.createBillItem(
         billResponse.bill_id,
         1,
         "ค่าน้ำ",
@@ -181,7 +181,7 @@ export function RecordScreen() {
         user?.token!
       );
 
-      await BillService.createBillItem(
+      await BillController.createBillItem(
         billResponse.bill_id,
         2,
         "ค่าไฟ",
@@ -190,7 +190,7 @@ export function RecordScreen() {
         user?.token!
       );
 
-      await BillService.createBillItem(
+      await BillController.createBillItem(
         billResponse.bill_id,
         3,
         "ค่าห้อง",
@@ -199,7 +199,7 @@ export function RecordScreen() {
         user?.token!
       );
 
-      await BillService.createBillItem(
+      await BillController.createBillItem(
         billResponse.bill_id,
         4,
         "ค่าอินเตอร์เน็ต",

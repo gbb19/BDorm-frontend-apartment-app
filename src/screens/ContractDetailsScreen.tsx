@@ -3,7 +3,7 @@ import { ContractResponse } from "../models/ContractResponse";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { ContractDetail } from "../models/ContractDetail";
-import { ContractService } from "../services/contractService";
+import { ContractController } from "../controllers/contractController";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/colors";
 import { GradientLine } from "../components/common/GradientLine";
@@ -42,7 +42,7 @@ export function ContractDetailsScreen() {
   async function fetchContractDetails() {
     setLoading(true);
     try {
-      const data = await ContractService.getContractDetails(
+      const data = await ContractController.getContractDetails(
         contractResponse.contractNumber,
         contractResponse.contractYear,
         user?.token!

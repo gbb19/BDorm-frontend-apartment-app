@@ -7,7 +7,7 @@ import { Text, StyleSheet, View, ActivityIndicator } from "react-native";
 import { colors } from "../styles/colors";
 import { GradientLine } from "../components/common/GradientLine";
 import { GradientButton } from "../components/common/GradientButton";
-import { ContractService } from "../services/contractService";
+import { ContractController } from "../controllers/contractController";
 import RoomCard from "../components/common/RoomCard";
 import { IContractRoomResponse } from "../types/contract.types";
 import { ContractResponse } from "../models/ContractResponse";
@@ -31,7 +31,7 @@ export function MyRoomScreen() {
   async function fetchRooms(username: string) {
     setLoading(true);
     try {
-      const data = await ContractService.getAllContractByUsername(
+      const data = await ContractController.getAllContractByUsername(
         username,
         user?.token!
       );

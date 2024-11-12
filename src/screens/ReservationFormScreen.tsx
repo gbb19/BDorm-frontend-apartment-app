@@ -12,7 +12,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { colors } from "../styles/colors";
 import { useAuth } from "../context/AuthContext";
 import { IReservationCreate } from "../types/reservation.types";
-import { ReservationService } from "../services/reservationService";
+import { ReservationController } from "../controllers/reservationController";
 import { GradientButton } from "../components/common/GradientButton";
 
 export function ReservationFormScreen() {
@@ -61,7 +61,7 @@ export function ReservationFormScreen() {
         tenant_username: user?.username!,
       };
 
-      await ReservationService.createReservation(reservationData, user?.token!);
+      await ReservationController.createReservation(reservationData, user?.token!);
       Alert.alert("Success", "Reservation created successfully");
 
       // Reset form

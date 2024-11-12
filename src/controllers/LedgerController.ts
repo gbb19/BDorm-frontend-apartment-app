@@ -9,7 +9,7 @@ import {
   ILedgerItemUpdateResponse
 } from "../types/LedgerItem.types";
 
-export class LedgerService {
+export class LedgerController {
   static async createLedger(
     ledgerMonth: number,
     ledgerYear: number,

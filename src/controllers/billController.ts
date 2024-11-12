@@ -10,7 +10,7 @@ import {
   ITransactionResponse,
 } from "../types/transaction.types";
 
-export class BillService {
+export class BillController {
   static async getBillsByUsername(
     username: string,
     token: string
@@ -145,11 +145,12 @@ export class BillService {
   static async updateTransactionStatus(
     transactionId: number,
     status: number,
+    username:string,
     token: string
   ): Promise<void> {
     try {
       await axios.put(
-        ENDPOINTS.BILL.PUT_UPDATE_TRANSACTION_STATUS(transactionId, status),
+        ENDPOINTS.BILL.PUT_UPDATE_TRANSACTION_STATUS(transactionId, status,username),
         {},
         {
           headers: {

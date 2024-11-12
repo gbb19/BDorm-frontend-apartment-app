@@ -14,7 +14,7 @@ import { PasswordTextField } from "../components/common/PasswordTextField";
 import { GradientButton } from "../components/common/GradientButton";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { UserService } from "../services/userService";
+import { UserController } from "../controllers/userController";
 import { IUserCreate } from "../types/user.types";
 import axiosInstance from "../apis/axios";
 
@@ -43,7 +43,7 @@ export function RegisterScreen() {
       };
 
       // เรียกฟังก์ชัน register และส่งข้อมูล userData
-      await UserService.register(userData);
+      await UserController.register(userData);
 
       // หากการสมัครสำเร็จ นำผู้ใช้ไปหน้า Login
       Alert.alert("Success", "Registration successful!");

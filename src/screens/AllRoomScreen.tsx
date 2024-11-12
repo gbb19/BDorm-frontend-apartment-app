@@ -6,7 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { Text, StyleSheet, View, ActivityIndicator } from "react-native";
 import { colors } from "../styles/colors";
 import { GradientLine } from "../components/common/GradientLine";
-import { ContractService } from "../services/contractService";
+import { ContractController } from "../controllers/contractController";
 import RoomCard from "../components/common/RoomCard";
 import { ContractResponse } from "../models/ContractResponse";
 import { ParamListBase, useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -36,7 +36,7 @@ export function AllRoomScreen() {
   async function fetchRooms(username: string) {
     setLoading(true);
     try {
-      const data = await ContractService.getAllContracts(user?.token!);
+      const data = await ContractController.getAllContracts(user?.token!);
       setContracts(data);
     } catch (err) {
       console.error(err);

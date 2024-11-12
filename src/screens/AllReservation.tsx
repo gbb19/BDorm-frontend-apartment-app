@@ -12,7 +12,7 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { Reservation } from "../models/Reservation";
-import { ReservationService } from "../services/reservationService";
+import { ReservationController } from "../controllers/reservationController";
 import { ReservationCard } from "../components/common/ReservationCard";
 import { ENDPOINTS } from "../apis/endpoints";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -45,7 +45,7 @@ export function AllReservation() {
   async function fetchReservations() {
     setLoading(true);
     try {
-      const data = await ReservationService.getAllReservations(user?.token!);
+      const data = await ReservationController.getAllReservations(user?.token!);
       setReservations(data);
     } catch (err) {
       console.error(err);

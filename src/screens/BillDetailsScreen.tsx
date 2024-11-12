@@ -15,14 +15,14 @@ import { colors } from "../styles/colors";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { BillItemTable } from "../components/common/BillItemTable";
 import { BillItem } from "../models/BillItem";
-import { BillService } from "../services/billService";
+import { BillController } from "../controllers/billController";
 import { useAuth } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { Bill } from "../models/Bill";
 import { GradientLine } from "../components/common/GradientLine";
 import { GradientButton } from "../components/common/GradientButton";
 import { TransactionCard } from "../components/common/TransactionCard";
-import { getImagesFromGithub } from "../services/githubService";
+import { getImagesFromGithub } from "../controllers/githubController";
 import { Transaction } from "../models/Transaction";
 import { TransactionImage } from "../types/transaction.types";
 import { PaymentUpload } from "../components/common/PaymentUpload";
@@ -100,7 +100,7 @@ export function BillDetailsScreen() {
   async function fetchTransactions() {
     setLoadingTransaction(true);
     try {
-      const transactions = await BillService.getTransactionsByBillID(
+      const transactions = await BillController.getTransactionsByBillID(
         bill.billID,
         user?.token!
       );
@@ -116,7 +116,7 @@ export function BillDetailsScreen() {
   async function fetchBillItems() {
     setLoadingBill(true);
     try {
-      const billItems = await BillService.getBillItemsByBillID(
+      const billItems = await BillController.getBillItemsByBillID(
         bill.billID,
         user?.token!
       );

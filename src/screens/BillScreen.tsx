@@ -7,7 +7,7 @@ import { BillCard } from "../components/common/BillCard";
 import { SearchBar } from "../components/common/SearchBar";
 import { Bill } from "../models/Bill";
 import { useAuth } from "../context/AuthContext";
-import { BillService } from "../services/billService";
+import { BillController } from "../controllers/billController";
 import { FlatList } from "react-native";
 import { DateHeader } from "../components/common/DateHeader";
 import {
@@ -50,7 +50,7 @@ export function BillScreen({ route }: BillScreenProps) {
   async function fetchBills() {
     setLoading(true);
     try {
-      const bills = await BillService.getBillsByUsername(
+      const bills = await BillController.getBillsByUsername(
         user?.username!,
         user?.token!
       );

@@ -19,8 +19,8 @@ export const ENDPOINTS = {
     GET_TRANSACTIONS_BY_BILL_ID: (billID: number) => `/transactions/${billID}`,
     GET_ALL_BILLS: "/bills",
     POST_CREATE_TRANSACTION: "/transactions",
-    PUT_UPDATE_TRANSACTION_STATUS: (transactionId: number, status: number) =>
-      `/transactions/${transactionId}/status/${status}`,
+    PUT_UPDATE_TRANSACTION_STATUS: (transactionId: number, status: number,username:string) =>
+      `/transactions/${transactionId}/status/${status}/username/${username}`,
     PUT_UPDATE_BILL_STATUS: (billId: number, status: number) =>
       `/bills/${billId}/status/${status}`,
     POST_CREATE_BILL: "/bills/create",

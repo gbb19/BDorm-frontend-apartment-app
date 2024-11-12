@@ -14,7 +14,7 @@ import { GradientButton } from "../components/common/GradientButton";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 
-import { UserService } from "../services/userService";
+import { UserController } from "../controllers/userController";
 import { useAuth } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -27,8 +27,8 @@ export function LoginScreen() {
 
 async function login() {
   try {
-    // เรียกใช้ UserService.login() เพื่อเข้าสู่ระบบและรับข้อมูลผู้ใช้
-    const user = await UserService.login({ username:usernameFormTextfield, password:passwordFormTextfield });
+    // เรียกใช้ UserController.login() เพื่อเข้าสู่ระบบและรับข้อมูลผู้ใช้
+    const user = await UserController.login({ username:usernameFormTextfield, password:passwordFormTextfield });
 
     // บันทึกข้อมูลผู้ใช้ลงใน AsyncStorage
     await AsyncStorage.setItem("userToken", user.token);

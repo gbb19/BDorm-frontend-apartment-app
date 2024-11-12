@@ -1,32 +1,16 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TopBar } from "../components/common/TopBar";
-import { colors } from "../styles/colors";
-import { Reservation } from "../models/Reservation";
-import {
-  ParamListBase,
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
-import { useAuth } from "../context/AuthContext";
-import { GradientButton } from "../components/common/GradientButton";
-import { GradientLine } from "../components/common/GradientLine";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { ReservationService } from "../services/reservationService";
-import {
-  IReservationUpdate,
-  IUpdateReservationDetails,
-} from "../types/reservation.types";
-import { BillService } from "../services/billService";
+import React, {useState} from "react";
+import {ActivityIndicator, ScrollView, StyleSheet, Text, View,} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {colors} from "../styles/colors";
+import {Reservation} from "../models/Reservation";
+import {ParamListBase, RouteProp, useFocusEffect, useNavigation, useRoute,} from "@react-navigation/native";
+import {useAuth} from "../context/AuthContext";
+import {GradientButton} from "../components/common/GradientButton";
+import {GradientLine} from "../components/common/GradientLine";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {ReservationController} from "../controllers/reservationController";
+import {IReservationUpdate, IUpdateReservationDetails,} from "../types/reservation.types";
+import {BillController} from "../controllers/billController";
 
 type ReservationStackNavigatorParamList = {
   ReservationDetails: {
@@ -40,9 +24,9 @@ type ReservationDetailsScreenRouteProp = RouteProp<
 >;
 
 export function ReservationDetailsScreen() {
-  const { user } = useAuth();
+  const {user} = useAuth();
   const route = useRoute<ReservationDetailsScreenRouteProp>();
-  const { reservation } = route.params;
+  const {reservation} = route.params;
   const [reservationDetails, setReservationDetails] =
     useState<Reservation | null>(null);
 
@@ -68,7 +52,7 @@ export function ReservationDetailsScreen() {
   async function fetchReservationDetails() {
     setLoading(true);
     try {
-      const data = await ReservationService.getReservationByID(
+      const data = await ReservationController.getReservationByID(
         reservation.reservationID,
         user?.token!
       );
@@ -123,36 +107,37 @@ export function ReservationDetailsScreen() {
         reservation_status: status,
       };
 
-      await ReservationService.updateReservationStatus(
+      await ReservationController.updateReservationStatus(
         updateData,
         user?.token!
       );
+      if (status == 1) {
+        const billResponse = await BillController.createBill(
+          -1,
+          reservationDetails?.tenantUsername!,
+          user?.username!,
+          user?.token!
+        );
 
-      const billResponse = await BillService.createBill(
-        5,
-        reservationDetails?.tenantUsername!,
-        user?.username!,
-        user?.token!
-      );
+        await BillController.createBillItem(
+          billResponse.bill_id,
+          1,
+          "ค่ามัดจำ",
+          1,
+          3000,
+          user?.token!
+        );
 
-      await BillService.createBillItem(
-        billResponse.bill_id,
-        1,
-        "ค่ามัดจำ",
-        1,
-        3000,
-        user?.token!
-      );
-
-      const updateReservationDetails: IUpdateReservationDetails = {
-        reservation_id: reservationDetails?.reservationID!,
-        bill_id: billResponse.bill_id,
-        manager_username: user?.username!,
-      };
-      await ReservationService.updateReservationDetails(
-        updateReservationDetails,
-        user?.token!
-      );
+        const updateReservationDetails: IUpdateReservationDetails = {
+          reservation_id: reservationDetails?.reservationID!,
+          bill_id: billResponse.bill_id,
+          manager_username: user?.username!,
+        };
+        await ReservationController.updateReservationDetails(
+          updateReservationDetails,
+          user?.token!
+        );
+      }
       fetchReservationDetails();
     } catch (err) {
       console.error(err);
@@ -164,7 +149,7 @@ export function ReservationDetailsScreen() {
     <SafeAreaView style={styles.container}>
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large"/>
         </View>
       ) : (
         <ScrollView style={styles.content}>
@@ -176,11 +161,11 @@ export function ReservationDetailsScreen() {
               {getStatusText(reservationDetails!.reservationStatus)}
             </Text>
           </View>
-          <GradientLine />
+          <GradientLine/>
           <View style={styles.boxContent}>
             <View style={styles.line}>
               <Text style={styles.subTitle}>Username:</Text>
-              <View style={{ width: 8 }}></View>
+              <View style={{width: 8}}></View>
               <Text style={styles.info}>
                 {reservationDetails!.tenantUsername}
               </Text>
@@ -188,7 +173,7 @@ export function ReservationDetailsScreen() {
 
             <View style={styles.line}>
               <Text style={styles.subTitle}>Available Date:</Text>
-              <View style={{ width: 8 }}></View>
+              <View style={{width: 8}}></View>
               <Text style={styles.info}>
                 {reservationDetails!.moveInDateTime}
               </Text>
@@ -199,14 +184,14 @@ export function ReservationDetailsScreen() {
                 <View>
                   <View style={styles.line}>
                     <Text style={styles.subTitle}>Bill:</Text>
-                    <View style={{ width: 8 }}></View>
+                    <View style={{width: 8}}></View>
                     <Text style={styles.info}>
                       {reservationDetails!.billID}
                     </Text>
                   </View>
-                  <View style={{ height: 16 }}></View>
-                  <GradientLine />
-                  <View style={{ height: 16 }}></View>
+                  <View style={{height: 16}}></View>
+                  <GradientLine/>
+                  <View style={{height: 16}}></View>
                   <GradientButton
                     title="Go Bill"
                     status="normal"
@@ -221,7 +206,7 @@ export function ReservationDetailsScreen() {
               reservationDetails?.reservationStatus == 0 &&
               reservationDetails?.reservationStatus == 0 && (
                 <View>
-                  <View style={{ height: 16 }}></View>
+                  <View style={{height: 16}}></View>
                   <View style={styles.rowButton}>
                     <GradientButton
                       title="Cancel"

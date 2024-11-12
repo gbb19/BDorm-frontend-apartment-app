@@ -8,7 +8,7 @@ import {
 import { ENDPOINTS } from "../apis/endpoints";
 import axios from "../apis/axios";
 
-export class ReservationService {
+export class ReservationController {
   static async createReservation(
     reservationData: IReservationCreate,
     token: string

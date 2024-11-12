@@ -8,7 +8,7 @@ import {
   IContractRoomResponse,
 } from "../types/contract.types";
 
-export class ContractService {
+export class ContractController {
   static async getAllContractByUsername(
     username: string,
     token: string

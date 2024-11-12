@@ -15,14 +15,14 @@ import {colors} from "../styles/colors";
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {BillItemTable} from "../components/common/BillItemTable";
 import {BillItem} from "../models/BillItem";
-import {BillService} from "../services/billService";
+import {BillController} from "../controllers/billController";
 import {useAuth} from "../context/AuthContext";
 import {ScrollView} from "react-native-gesture-handler";
 import {Bill} from "../models/Bill";
 import {GradientLine} from "../components/common/GradientLine";
 import {GradientButton} from "../components/common/GradientButton";
 import {TransactionCard} from "../components/common/TransactionCard";
-import {getImagesFromGithub} from "../services/githubService";
+import {getImagesFromGithub} from "../controllers/githubController";
 import {Transaction} from "../models/Transaction";
 import {TransactionImage} from "../types/transaction.types";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -70,15 +70,22 @@ export function BillManagerDetailsScreen() {
   const [isLatePayment, setIsLatePayment] = useState(false);
   const [daysLate, setDaysLate] = useState(0);
 
+
   const checkLatePayment = () => {
-    if (bill.paymentTerm === -1) return false;
+    // If no payment term (-1) or no payment date, return false
+    if (bill.paymentTerm === -1 || !selectedTransaction?.paymentDateTime) return false;
 
     const createDate = new Date(bill.createDateTime);
-    const currentDate = new Date();
-    const diffTime = Math.abs(currentDate.getTime() - createDate.getTime());
+    const paymentDate = new Date(selectedTransaction.paymentDateTime);
+
+    // Calculate difference between payment date and create date
+    const diffTime = Math.abs(paymentDate.getTime() - createDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+    // Set days late (0 if paid on time)
     setDaysLate(Math.max(0, diffDays - bill.paymentTerm));
+
+    // Return true if payment was made after payment term
     return diffDays > bill.paymentTerm;
   };
 
@@ -116,7 +123,7 @@ export function BillManagerDetailsScreen() {
   async function fetchTransactions() {
     setLoadingTransaction(true);
     try {
-      const transactions = await BillService.getTransactionsByBillID(
+      const transactions = await BillController.getTransactionsByBillID(
         bill.billID,
         user?.token!
       );
@@ -132,7 +139,7 @@ export function BillManagerDetailsScreen() {
   async function fetchBillItems() {
     setLoadingBill(true);
     try {
-      const billItems = await BillService.getBillItemsByBillID(
+      const billItems = await BillController.getBillItemsByBillID(
         bill.billID,
         user?.token!
       );
@@ -177,30 +184,31 @@ export function BillManagerDetailsScreen() {
   async function processApproval(createChargeBill = false) {
     try {
       // Approve the transaction
-      await BillService.updateTransactionStatus(
+      await BillController.updateTransactionStatus(
         selectedTransaction?.transactionID!,
         1,
+        user?.username!,
         user?.token!
       );
 
       // Create charge bill if requested
       if (createChargeBill) {
 
-        const billResponse = await BillService.createBill(-1, bill.tenantUsername, user?.username!, user?.token!);
+        const billResponse = await BillController.createBill(-1, bill.tenantUsername, user?.username!, user?.token!);
 
         const createDate = new Date(bill.createDateTime);
         const currentDate = new Date();
         const diffTime = Math.abs(currentDate.getTime() - createDate.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        await BillService.createBillItem(billResponse.bill_id, 1, 'ค่าปรับ', diffDays, 100, user?.token!)
+        await BillController.createBillItem(billResponse.bill_id, 1, 'ค่าปรับ', diffDays, 100, user?.token!)
         alert("Transaction approved and late payment charge bill created");
       } else {
         alert("Transaction approved successfully");
       }
 
       if (bill.billStatus == 1) {
-        await BillService.updateBillStatus(bill.billID, 2, user?.token!);
+        await BillController.updateBillStatus(bill.billID, 2, user?.token!);
       }
     } catch (error) {
       alert("Failed to process approval");
@@ -256,9 +264,10 @@ export function BillManagerDetailsScreen() {
 
   async function onTransactionFileRejectButtonClick() {
     try {
-      await BillService.updateTransactionStatus(
+      await BillController.updateTransactionStatus(
         selectedTransaction?.transactionID!,
         2,
+        user?.username!,
         user?.token!
       );
       alert("Transaction rejected successfully");
@@ -387,7 +396,10 @@ export function BillManagerDetailsScreen() {
                           width={100}
                           onPress={onTransactionFileApproveButtonClick}
                         />
+
+
                       </View>
+
                     )}
                   </View>
                 </View>
@@ -436,6 +448,7 @@ export function BillManagerDetailsScreen() {
             />
           </View>
         )}
+
 
         {ChargeBillConfirmationModal()}
         {ModalImageShow()}
