@@ -48,9 +48,6 @@ export function RecordScreen() {
   const [ledgerItems, setLedgerItems] = useState<LedgerItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [billItems, setBillItems] = useState<BillItem[] | null>(null);
-  const [isBillItemsLoading, setIsBillItemsLoading] = useState(false);
-  const [isBillItemModalVisible, setIsBillItemModalVisible] = useState(false);
-  const [modalHeight, setModalHeight] = useState("70%");
 
   const [error, setError] = useState("");
 
@@ -72,22 +69,6 @@ export function RecordScreen() {
       setError("Failed to fetch ledgerItem");
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function fetchBillItems(billResponse: IBillCreateResponse) {
-    setIsBillItemsLoading(true); // แสดง loading indicator
-    try {
-      const data = await BillController.getBillItemsByBillID(
-        billResponse.bill_id,
-        user?.token!
-      );
-      setBillItems(data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to fetch billItems");
-    } finally {
-      setIsBillItemsLoading(false); // ซ่อน loading indicator
     }
   }
 
@@ -436,8 +417,6 @@ export function RecordScreen() {
         user?.token!
       );
 
-      await fetchBillItems(billID);
-      setIsBillItemModalVisible(true);
       fetchLedgerItem();
     } catch (error) {
       throw error;
@@ -465,37 +444,6 @@ export function RecordScreen() {
             />
           ))
         )}
-
-        <Modal
-          visible={isBillItemModalVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setIsBillItemModalVisible(false)}
-        >
-          <ScrollView
-            style={styles.modalOverlay}
-            contentContainerStyle={styles.modalContentContainer}
-          >
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Bill Details</Text>
-              {isBillItemsLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" />
-                </View>
-              ) : (
-                <View>
-                  {billItems && <BillItemTable billItems={billItems} />}
-                </View>
-              )}
-              <TouchableOpacity
-                style={[styles.modalButton, styles.okButton]}
-                onPress={() => setIsBillItemModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>OK</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
