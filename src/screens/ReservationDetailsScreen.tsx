@@ -1,16 +1,33 @@
-import React, {useState} from "react";
-import {ActivityIndicator, ScrollView, StyleSheet, Text, View,} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {colors} from "../styles/colors";
-import {Reservation} from "../models/Reservation";
-import {ParamListBase, RouteProp, useFocusEffect, useNavigation, useRoute,} from "@react-navigation/native";
-import {useAuth} from "../context/AuthContext";
-import {GradientButton} from "../components/common/GradientButton";
-import {GradientLine} from "../components/common/GradientLine";
-import {StackNavigationProp} from "@react-navigation/stack";
-import {ReservationController} from "../controllers/reservationController";
-import {IReservationUpdate, IUpdateReservationDetails,} from "../types/reservation.types";
-import {BillController} from "../controllers/billController";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colors } from "../styles/colors";
+import { Reservation } from "../models/Reservation";
+import {
+  ParamListBase,
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext";
+import { GradientButton } from "../components/common/GradientButton";
+import { GradientLine } from "../components/common/GradientLine";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { ReservationController } from "../controllers/reservationController";
+import {
+  IReservationUpdate,
+  IUpdateReservationDetails,
+} from "../types/reservation.types";
+import { BillController } from "../controllers/billController";
+import { UserController } from "../controllers/userController";
+import { IUserDetails } from "../types/user.types";
 
 type ReservationStackNavigatorParamList = {
   ReservationDetails: {
@@ -24,11 +41,12 @@ type ReservationDetailsScreenRouteProp = RouteProp<
 >;
 
 export function ReservationDetailsScreen() {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const route = useRoute<ReservationDetailsScreenRouteProp>();
-  const {reservation} = route.params;
+  const { reservation } = route.params;
   const [reservationDetails, setReservationDetails] =
     useState<Reservation | null>(null);
+  const [userDetails, setUserDetails] = useState<IUserDetails | null>(null);
 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
@@ -38,6 +56,7 @@ export function ReservationDetailsScreen() {
   useFocusEffect(
     React.useCallback(() => {
       fetchReservationDetails();
+      fetchUserDetails();
     }, [])
   );
 
@@ -61,6 +80,22 @@ export function ReservationDetailsScreen() {
     } catch (err) {
       console.error(err);
       setError("Failed to fetch reservation details");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchUserDetails() {
+    setLoading(true);
+    try {
+      const data = await UserController.getUserDetails(
+        reservation.tenantUsername,
+        user?.token!
+      );
+      setUserDetails(data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch user details");
     } finally {
       setLoading(false);
     }
@@ -149,33 +184,40 @@ export function ReservationDetailsScreen() {
     <SafeAreaView style={styles.container}>
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large"/>
+          <ActivityIndicator size="large" />
         </View>
       ) : (
         <ScrollView style={styles.content}>
           <View style={styles.row}>
             <Text style={styles.title}>
-              Reservation: {reservationDetails!.reservationID}
+              Reservation: {reservationDetails?.reservationID}
             </Text>
-            <Text style={getTextStyle(reservationDetails!.reservationStatus)}>
-              {getStatusText(reservationDetails!.reservationStatus)}
+            <Text style={getTextStyle(reservationDetails?.reservationStatus!)}>
+              {getStatusText(reservationDetails?.reservationStatus!)}
             </Text>
           </View>
-          <GradientLine/>
+          <GradientLine />
           <View style={styles.boxContent}>
             <View style={styles.line}>
-              <Text style={styles.subTitle}>Username:</Text>
-              <View style={{width: 8}}></View>
+              <Text style={styles.subTitle}>Name:</Text>
+              <View style={{ width: 8 }}></View>
               <Text style={styles.info}>
-                {reservationDetails!.tenantUsername}
+                {userDetails?.first_name} {userDetails?.last_name}
+              </Text>
+            </View>
+            <View style={styles.line}>
+              <Text style={styles.subTitle}>Username:</Text>
+              <View style={{ width: 8 }}></View>
+              <Text style={styles.info}>
+                {reservationDetails?.tenantUsername}
               </Text>
             </View>
 
             <View style={styles.line}>
               <Text style={styles.subTitle}>Available Date:</Text>
-              <View style={{width: 8}}></View>
+              <View style={{ width: 8 }}></View>
               <Text style={styles.info}>
-                {reservationDetails!.moveInDateTime}
+                {reservationDetails?.moveInDateTime}
               </Text>
             </View>
 
@@ -184,14 +226,14 @@ export function ReservationDetailsScreen() {
                 <View>
                   <View style={styles.line}>
                     <Text style={styles.subTitle}>Bill:</Text>
-                    <View style={{width: 8}}></View>
+                    <View style={{ width: 8 }}></View>
                     <Text style={styles.info}>
                       {reservationDetails!.billID}
                     </Text>
                   </View>
-                  <View style={{height: 16}}></View>
-                  <GradientLine/>
-                  <View style={{height: 16}}></View>
+                  <View style={{ height: 16 }}></View>
+                  <GradientLine />
+                  <View style={{ height: 16 }}></View>
                   <GradientButton
                     title="Go Bill"
                     status="normal"
@@ -206,7 +248,7 @@ export function ReservationDetailsScreen() {
               reservationDetails?.reservationStatus == 0 &&
               reservationDetails?.reservationStatus == 0 && (
                 <View>
-                  <View style={{height: 16}}></View>
+                  <View style={{ height: 16 }}></View>
                   <View style={styles.rowButton}>
                     <GradientButton
                       title="Cancel"

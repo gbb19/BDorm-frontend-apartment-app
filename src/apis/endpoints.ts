@@ -3,6 +3,7 @@ export const ENDPOINTS = {
     LOGIN: () => `/login`,
     REGISTER: () => `/register`,
     GET_ALL_TENANTS: "/users/tenant",
+    GET_USER_DETAILS: (username: string) => `/users/${username}`,
   },
 
   CONTRACT: {
@@ -19,8 +20,11 @@ export const ENDPOINTS = {
     GET_TRANSACTIONS_BY_BILL_ID: (billID: number) => `/transactions/${billID}`,
     GET_ALL_BILLS: "/bills",
     POST_CREATE_TRANSACTION: "/transactions",
-    PUT_UPDATE_TRANSACTION_STATUS: (transactionId: number, status: number,username:string) =>
-      `/transactions/${transactionId}/status/${status}/username/${username}`,
+    PUT_UPDATE_TRANSACTION_STATUS: (
+      transactionId: number,
+      status: number,
+      username: string
+    ) => `/transactions/${transactionId}/status/${status}/username/${username}`,
     PUT_UPDATE_BILL_STATUS: (billId: number, status: number) =>
       `/bills/${billId}/status/${status}`,
     POST_CREATE_BILL: "/bills/create",
@@ -41,6 +45,7 @@ export const ENDPOINTS = {
     POST_CREATE_LEDGER_ITEM: "/ledger-items/create",
     PUT_UPDATE_LEDGER_ITEM: "/ledger-items/update",
     PUT_UPDATE_LEDGER_ITEM_STATUS: "/ledger-items/status/update",
-    GET_BY_MONTH_AND_YEAR: (month: number, year: number) => `/ledger-items/${month}/${year}`,
+    GET_BY_MONTH_AND_YEAR: (month: number, year: number) =>
+      `/ledger-items/${month}/${year}`,
   },
 };
